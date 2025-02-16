@@ -42,6 +42,25 @@ const App = (): JSX.Element => {
     return level * 15
   }
 
+  const createBookmarkFolder = (parentId?: string) => {
+    const folderName = prompt('What do you want to name the folder?')
+    if (folderName) {
+      if (parentId) {
+        chrome.bookmarks.create({
+          parentId: parentId,
+          title: folderName,
+        })
+      } else {
+        chrome.bookmarks.create({
+          title: folderName,
+        })
+      }
+      fetchBookmarks()
+      return true
+    }
+    return false
+  }
+
   const renderBookmarks = (
     tree: chrome.bookmarks.BookmarkTreeNode[],
     level = 0
@@ -79,23 +98,13 @@ const App = (): JSX.Element => {
             <ul id={treeItem.id} className="hidden flex-col">
               {renderBookmarks(treeItem.children, level + 1)}
 
-              <div
-                className="flex py-2 pr-2 bg-grey-100 hover:bg-blue-100 cursor-pointer"
-                onClick={() => {
-                  const folderName = prompt(
-                    'What do you want to name the folder?'
-                  )
-                  if (folderName) {
-                    chrome.bookmarks.create({
-                      parentId: treeItem.id,
-                      title: folderName,
-                    })
-                    fetchBookmarks()
-                  }
-                }}
-              >
-                ➕ New Folder?
-              </div>
+            <div //div for creating new folder
+            className="flex py-2 pr-2 text-base font-sembold bg-grey-100 hover:bg-blue-100 cursor-pointer over:font-bold"
+            onClick={() => {
+              if (createBookmarkFolder(treeItem.id)) {
+                alert("folder created!")
+              }
+            }}>➕ New Folder?</div>
             </ul>
           </li>
         )

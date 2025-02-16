@@ -29,6 +29,25 @@ const App = () => {
     const calculateIndent = (level) => {
         return level * 15;
     };
+    const createBookmarkFolder = (parentId) => {
+        const folderName = prompt('What do you want to name the folder?');
+        if (folderName) {
+            if (parentId) {
+                chrome.bookmarks.create({
+                    parentId: parentId,
+                    title: folderName,
+                });
+            }
+            else {
+                chrome.bookmarks.create({
+                    title: folderName,
+                });
+            }
+            fetchBookmarks();
+            return true;
+        }
+        return false;
+    };
     const renderBookmarks = (tree, level = 0) => {
         return tree.map((treeItem) => {
             if (treeItem.children) {
@@ -54,14 +73,9 @@ const App = () => {
                         treeItem.title),
                     react.createElement("ul", { id: treeItem.id, className: "hidden flex-col" },
                         renderBookmarks(treeItem.children, level + 1),
-                        react.createElement("div", { className: "flex py-2 pr-2 bg-grey-100 hover:bg-blue-100 cursor-pointer", onClick: () => {
-                                const folderName = prompt('What do you want to name the folder?');
-                                if (folderName) {
-                                    chrome.bookmarks.create({
-                                        parentId: treeItem.id,
-                                        title: folderName,
-                                    });
-                                    fetchBookmarks();
+                        react.createElement("div", { className: "flex py-2 pr-2 text-base font-sembold bg-grey-100 hover:bg-blue-100 cursor-pointer over:font-bold", onClick: () => {
+                                if (createBookmarkFolder(treeItem.id)) {
+                                    alert("folder created!");
                                 }
                             } }, "\u2795 New Folder?"))));
             }
