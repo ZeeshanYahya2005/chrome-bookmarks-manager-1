@@ -7,10 +7,17 @@ const App = (): JSX.Element => {
   const [searchResults, setSearchResults] = useState<
     chrome.bookmarks.BookmarkTreeNode[]
   >([])
+  const [recentBookmarkResults, setRecentBookmarkResults] = useState<
+    chrome.bookmarks.BookmarkTreeNode[]
+    >([])
 
   useEffect(() => {
     fetchBookmarks()
   }, [])
+
+  useEffect(() => {
+    fetchRecentBookmarks()
+  })
 
   const fetchBookmarks = () => {
     chrome.bookmarks.getTree((bookmarkTreeNodes) => {
@@ -18,9 +25,16 @@ const App = (): JSX.Element => {
       setBookmarkTree(bookmarkTree ? bookmarkTree : [])
     })
   }
+  
   const searchBookmarks = (keyword: string) => {
     chrome.bookmarks.search(keyword, (results) => {
       setSearchResults(results)
+    })
+  }
+
+  const fetchRecentBookmarks = () => {
+    chrome.bookmarks.getRecent(20, (results) => {
+      setRecentBookmarkResults(results)
     })
   }
 
@@ -53,20 +67,20 @@ const App = (): JSX.Element => {
                   if (childUl.classList.contains('flex')) {
                     targetElement.innerText = `📂 ${treeItem.title}`
                   } else {
-                    targetElement.innerText = `📁 ${treeItem.title}`
+                    targetElement.innerText = `⮕📁 ${treeItem.title}`
                   }
                 }
               }}
-              className="flex py-2 pr-2 cursor-pointer font-semibold border-b text-base hover:font-bold"
+              className="flex py-2 pr-2 cursor-pointer font-bold border-b text-sm hover:font-bold"
             >
-              📁 {treeItem.title}
+              ⮕📁 {treeItem.title}
             </span>
 
             <ul id={treeItem.id} className="hidden flex-col">
               {renderBookmarks(treeItem.children, level + 1)}
 
               <div
-                className="flex py-2 pr-2 cursor-pointer font-sembold hover:font-bold text-base"
+                className="flex py-2 pr-2 bg-grey-100 hover:bg-blue-100 cursor-pointer"
                 onClick={() => {
                   const folderName = prompt(
                     'What do you want to name the folder?'
@@ -80,7 +94,7 @@ const App = (): JSX.Element => {
                   }
                 }}
               >
-                ➕ New Folder
+                ➕ New Folder?
               </div>
             </ul>
           </li>
@@ -95,7 +109,7 @@ const App = (): JSX.Element => {
               style={{
                 paddingLeft: calculateIndent(level),
               }}
-              className="flex py-2 pr-2 bg-gray-100 hover:bg-blue-100 cursor-pointer"
+              className="flex py-2 pr-2 bg-grey-100 hover:bg-blue-100 cursor-pointer"
             >
               <img
                 src={
@@ -108,6 +122,19 @@ const App = (): JSX.Element => {
           </li>
         )
       }
+    })
+  }
+
+  const renderRecentBookmarks = (tree: chrome.bookmarks.BookmarkTreeNode[]) => {
+    return tree.map((treeItem) => {
+      //...change to loop through recent bookmarks
+        return (<li key={treeItem.id}>
+          <a href={treeItem.url} target="_blank" className="flex py-2 pr-2 bg-grey-100 hover:bg-blue-100 cursor-pointer">
+            <img className='w-4 h-4 mr-2' src={'https://www.google.com/s2/favicons?domain=' + treeItem.url}></img>
+            {treeItem.title}
+          </a>
+        </li>
+        )
     })
   }
 
@@ -128,6 +155,13 @@ const App = (): JSX.Element => {
           className="w-full text-slate-700 px-3 py-3 bg-slate-200 rounded-lg font-bold text-base"
         />
         <ul className="mt-2">{renderBookmarks(searchResults)}</ul>
+      </div>
+            {/* recent bookmarks bar */}
+            <div className="w-[500px] min-h-screen"><h1 className="text-2xl font-bold mb-4">Recent Bookmarks</h1>
+      <ul>
+          {renderRecentBookmarks(recentBookmarkResults)}
+      </ul>
+
       </div>
     </div>
   )

@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Bookmark Override",
+  "version": "1.0.0",
+  "description": "DEVELOPMENT build with simple auto-reloader\n[2025-02-16 18:47:11] waiting for changes...",
+  "permissions": [
+    "bookmarks",
+    "tabs"
+  ],
+  "action": {
+    "default_popup": "pages/popup/index.html"
+  },
+  "chrome_url_overrides": {
+    "bookmarks": "pages/bookmarks/index.html"
+  },
+  "background": {
+    "service_worker": "service_worker.js",
+    "type": "module"
+  }
+}
