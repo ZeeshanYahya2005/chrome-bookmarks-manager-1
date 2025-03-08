@@ -29,6 +29,28 @@ const App = () => {
     const calculateIndent = (level) => {
         return level * 15;
     };
+    const createBookmark = (parentId) => {
+        const bookmarkName = prompt('What do you want to name the bookmark?');
+        const bookmarkUrl = prompt('What is the URL of the bookmark?');
+        if (bookmarkName && bookmarkUrl) {
+            if (parentId) {
+                chrome.bookmarks.create({
+                    parentId: parentId,
+                    title: bookmarkName,
+                    url: bookmarkUrl,
+                });
+            }
+            else {
+                chrome.bookmarks.create({
+                    title: bookmarkName,
+                    url: bookmarkUrl,
+                });
+            }
+            fetchBookmarks();
+            return true;
+        }
+        return false;
+    };
     const createBookmarkFolder = (parentId) => {
         const folderName = prompt('What do you want to name the folder?');
         if (folderName) {
@@ -73,6 +95,11 @@ const App = () => {
                         treeItem.title),
                     react.createElement("ul", { id: treeItem.id, className: "hidden flex-col" },
                         renderBookmarks(treeItem.children, level + 1),
+                        react.createElement("div", { className: "flex py-2 pr-2 bg-grey-100 hover:bg-blue-100 cursor-pointer", onClick: () => {
+                                if (createBookmark(treeItem.id)) {
+                                    alert("bookmark created!");
+                                }
+                            } }, "\u2795 New Bookmark?"),
                         react.createElement("div", { className: "flex py-2 pr-2 text-base font-sembold bg-grey-100 hover:bg-blue-100 cursor-pointer over:font-bold", onClick: () => {
                                 if (createBookmarkFolder(treeItem.id)) {
                                     alert("folder created!");
