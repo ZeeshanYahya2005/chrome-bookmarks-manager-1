@@ -1,7 +1,7 @@
 {
   "name": "Bookmark Override",
   "description": "Simple bookmark manager",
-  "permissions": ["bookmarks", "tabs"],
+  "permissions": ["bookmarks", "tabs", "storage"],
   "action": {
     "default_popup": "pages/popup/index.html"
   },

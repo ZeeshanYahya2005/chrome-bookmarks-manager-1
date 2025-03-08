@@ -30,8 +30,8 @@ const App = () => {
         return level * 15;
     };
     const createBookmark = (parentId) => {
-        const bookmarkName = prompt('What do you want to name the bookmark?');
-        const bookmarkUrl = prompt('What is the URL of the bookmark?');
+        const bookmarkUrl = prompt('Bookmark URL:');
+        const bookmarkName = prompt('Bookmark Name:');
         if (bookmarkName && bookmarkUrl) {
             if (parentId) {
                 chrome.bookmarks.create({
@@ -46,6 +46,14 @@ const App = () => {
                     url: bookmarkUrl,
                 });
             }
+            fetchBookmarks();
+            return true;
+        }
+        return false;
+    };
+    const deleteBookmark = (bookmarkId) => {
+        if (bookmarkId) {
+            chrome.bookmarks.remove(bookmarkId);
             fetchBookmarks();
             return true;
         }
@@ -107,13 +115,18 @@ const App = () => {
                             } }, "\u2795 New Folder?"))));
             }
             else {
-                // link
-                return (react.createElement("li", { key: treeItem.id },
+                // bookmark
+                return (react.createElement("li", { key: treeItem.id, className: 'flex justify-between items-center' },
                     react.createElement("a", { href: treeItem.url, target: "_blank", style: {
                             paddingLeft: calculateIndent(level),
                         }, className: "flex py-2 pr-2 bg-grey-100 hover:bg-blue-100 cursor-pointer" },
                         react.createElement("img", { src: 'https://www.google.com/s2/favicons?domain=' + treeItem.url, className: "w-4 h-4 mr-2" }),
-                        treeItem.title)));
+                        treeItem.title),
+                    react.createElement("div", { className: "w-5 h-5 ml-2 cursor-pointer", onClick: () => {
+                            if (deleteBookmark(treeItem.id)) {
+                                alert("bookmark deleted!");
+                            }
+                        } }, "\uD83D\uDDD1\uFE0F")));
             }
         });
     };

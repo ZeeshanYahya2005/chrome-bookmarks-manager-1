@@ -43,8 +43,8 @@ const App = (): JSX.Element => {
   }
 
   const createBookmark = (parentId?: string) => {
-    const bookmarkName = prompt('What do you want to name the bookmark?')
-    const bookmarkUrl = prompt('What is the URL of the bookmark?')
+    const bookmarkUrl = prompt('Bookmark URL:')
+    const bookmarkName = prompt('Bookmark Name:')
     if (bookmarkName && bookmarkUrl) {
       if (parentId) {
         chrome.bookmarks.create({
@@ -58,6 +58,15 @@ const App = (): JSX.Element => {
           url: bookmarkUrl,
         })
       }
+      fetchBookmarks()
+      return true
+    }
+    return false
+  }
+
+  const deleteBookmark = (bookmarkId: string) => {
+    if (bookmarkId) {
+      chrome.bookmarks.remove(bookmarkId)
       fetchBookmarks()
       return true
     }
@@ -140,9 +149,9 @@ const App = (): JSX.Element => {
           </li>
         )
       } else {
-        // link
+        // bookmark
         return (
-          <li key={treeItem.id}>
+          <li key={treeItem.id} className='flex justify-between items-center'>
             <a
               href={treeItem.url}
               target="_blank"
@@ -159,6 +168,14 @@ const App = (): JSX.Element => {
               />
               {treeItem.title}
             </a>
+            <div //div for deleting bookmark
+               className="w-5 h-5 ml-2 cursor-pointer"
+              onClick={() => {
+              if (deleteBookmark(treeItem.id)) {
+                alert("bookmark deleted!")
+              }
+            }}
+            >🗑️</div>
           </li>
         )
       }
