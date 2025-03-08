@@ -99,7 +99,7 @@ const App = (): JSX.Element => {
               {renderBookmarks(treeItem.children, level + 1)}
 
             <div //div for creating new folder
-            className="flex py-2 pr-2 text-base font-sembold bg-grey-100 hover:bg-blue-100 cursor-pointer over:font-bold"
+              className="flex py-2 pr-2 text-base font-sembold bg-grey-100 hover:bg-blue-100 cursor-pointer over:font-bold"
             onClick={() => {
               if (createBookmarkFolder(treeItem.id)) {
                 alert("folder created!")
